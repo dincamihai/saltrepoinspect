@@ -8,4 +8,8 @@ setup(name='saltrepoinspect',
       author_email='dincamihai@gmail.com',
       license='MIT',
       packages=['saltrepoinspect'],
+      install_requires=[
+          'requests',
+          'beautifulsoup4'
+      ],
       zip_safe=False)
