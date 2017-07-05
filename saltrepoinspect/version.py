@@ -1,8 +1,9 @@
+import re
 import requests
 from bs4 import BeautifulSoup
 
 
-def get_salt_version_in_repo(repo_url):
+def get_salt_version(repo_url):
     resp = requests.get("{0}/x86_64".format(repo_url))
     resp.raise_for_status()
     soup = BeautifulSoup(resp.content, 'html.parser')
