@@ -23,8 +23,9 @@ def parse_flavor(flavor):
     return flavor_major, flavor_minor
 
 
-def get_salt_version(repo_url):
-    resp = requests.get("{0}/x86_64".format(repo_url))
+def get_salt_version(version, flavor):
+    salt_repo_url = get_salt_repo_url(version, flavor)
+    resp = requests.get("{0}/x86_64".format(salt_repo_url))
     resp.raise_for_status()
     soup = BeautifulSoup(resp.content, 'html.parser')
     ex = re.compile(r'^salt-(?P<version>[0-9a-z-\.]+)-(?P<build>[0-9\.]+).x86_64.rpm')
