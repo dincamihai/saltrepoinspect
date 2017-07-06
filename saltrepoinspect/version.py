@@ -52,7 +52,9 @@ def get_repo_name(version, flavor):
     return repo_name
 
 
-def get_salt_repo_name(version, vendor, repo_name):
+def get_salt_repo_name(version, flavor):
+    vendor, version_major, separator, version_minor = parse_version(version)
+    repo_name = get_repo_name(version, flavor)
     salt_repo_name = 'SLE_{}'.format(repo_name).upper()
     if vendor == 'rhel':
         salt_repo_name = '{}_{}'.format(vendor, repo_name)
@@ -74,9 +76,8 @@ def get_salt_repo_url_flavor(flavor):
 
 
 def get_salt_repo_url(version, flavor):
-    vendor, version_major, separator, version_minor = parse_version(version)
     salt_repo_url_flavor = get_salt_repo_url_flavor(flavor)
-    salt_repo_name = get_salt_repo_name(version, vendor, get_repo_name(version, flavor))
+    salt_repo_name = get_salt_repo_name(version, flavor)
     salt_repo_url = (
         "http://download.opensuse.org/repositories/"
         "systemsmanagement:/saltstack:/{0}/{1}/".format(
@@ -89,7 +90,7 @@ def get_docker_params(version, flavor):
     vendor, version_major, separator, version_minor = parse_version(version)
     flavor_major, flavor_minor = parse_flavor(flavor)
     repo_name = get_repo_name(version, flavor)
-    salt_repo_name = get_salt_repo_name(version, vendor, repo_name)
+    salt_repo_name = get_salt_repo_name(version, flavor)
     salt_repo_url_flavor = get_salt_repo_url_flavor(flavor)
     repo_parts = get_repo_parts(version)
     novel_repo_name = '-'.join(repo_parts).upper()
