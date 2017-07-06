@@ -38,7 +38,7 @@ def get_repo_parts(version):
     vendor, version_major, separator, version_minor = parse_version(version)
     repo_parts = [version_major]
     if version_minor:
-        repo_parts.append('{}{}'.format(separator, version_minor))
+        repo_parts.append('{0}{1}'.format(separator, version_minor))
     return repo_parts
 
 
@@ -55,9 +55,9 @@ def get_repo_name(version, flavor):
 def get_salt_repo_name(version, flavor):
     vendor, version_major, separator, version_minor = parse_version(version)
     repo_name = get_repo_name(version, flavor)
-    salt_repo_name = 'SLE_{}'.format(repo_name).upper()
+    salt_repo_name = 'SLE_{0}'.format(repo_name).upper()
     if vendor == 'rhel':
-        salt_repo_name = '{}_{}'.format(vendor, repo_name)
+        salt_repo_name = '{0}_{1}'.format(vendor, repo_name)
 
     if version in ['sles11sp3', 'sles11sp4']:
         salt_repo_name = 'SLE_11_SP4'
@@ -94,7 +94,7 @@ def get_docker_params(version, flavor):
     salt_repo_url_flavor = get_salt_repo_url_flavor(flavor)
     repo_parts = get_repo_parts(version)
     novel_repo_name = '-'.join(repo_parts).upper()
-    parent_image = 'registry.mgr.suse.de/{}'.format(version)
+    parent_image = 'registry.mgr.suse.de/{0}'.format(version)
     repo_label = ' '.join(repo_parts).upper()
     salt_repo_url = get_salt_repo_url(version, flavor)
     salt_version = get_salt_version(version, flavor)
