@@ -83,3 +83,35 @@ def get_salt_repo_url(version, flavor):
             salt_repo_url_flavor, salt_repo_name.upper())
     )
     return salt_repo_url
+
+
+def get_docker_params(version, flavor):
+    vendor, version_major, separator, version_minor = parse_version(version)
+    flavor_major, flavor_minor = parse_flavor(flavor)
+    repo_name = get_repo_name(version, flavor)
+    salt_repo_name = get_salt_repo_name(version, vendor, repo_name)
+    salt_repo_url_flavor = get_salt_repo_url_flavor(flavor)
+    repo_parts = get_repo_parts(version)
+    novel_repo_name = '-'.join(repo_parts).upper()
+    parent_image = 'registry.mgr.suse.de/{}'.format(version)
+    repo_label = ' '.join(repo_parts).upper()
+    salt_repo_url = get_salt_repo_url(version, flavor)
+    salt_version = get_salt_version(version, flavor)
+
+    return dict(
+        vendor = vendor,
+        major=version_major,
+        minor=version_minor,
+        version_separator=separator,
+        flavor=flavor,
+        version=version,
+        parent_image=parent_image,
+        flavor_major=flavor_major,
+        flavor_minor=flavor_minor,
+        repo_name=repo_name,
+        novel_repo_name=novel_repo_name,
+        repo_label=repo_label,
+        salt_repo_url_flavor=salt_repo_url_flavor,
+        salt_repo_name=salt_repo_name,
+        salt_repo_url=salt_repo_url,
+        salt_version=salt_version)

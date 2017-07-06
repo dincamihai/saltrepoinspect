@@ -6,5 +6,6 @@ from version import (
     get_salt_repo_name,
     get_repo_parts,
     get_salt_repo_url,
-    get_salt_repo_url_flavor
+    get_salt_repo_url_flavor,
+    get_docker_params
 )
