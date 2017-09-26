@@ -1,4 +1,5 @@
 import re
+import os
 import requests
 from bs4 import BeautifulSoup
 
@@ -79,9 +80,11 @@ def get_salt_repo_url(version, flavor):
     salt_repo_url_flavor = get_salt_repo_url_flavor(flavor)
     salt_repo_name = get_salt_repo_name(version, flavor)
     salt_repo_url = (
-        "http://download.opensuse.org/repositories/"
-        "systemsmanagement:/saltstack:/{0}/{1}/".format(
-            salt_repo_url_flavor, salt_repo_name.upper())
+        "http://{0}/repositories/systemsmanagement:/saltstack:/{1}/{2}/".format(
+            os.environ.get("MIRROR", "download.opensuse.org"),
+            salt_repo_url_flavor,
+            salt_repo_name.upper()
+        )
     )
     return salt_repo_url
 
