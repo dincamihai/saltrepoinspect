@@ -31,6 +31,8 @@ def get_salt_version(version, flavor):
     soup = BeautifulSoup(resp.content, 'html.parser')
     ex = re.compile(r'^salt-(?P<version>[0-9a-z-\.]+)-(?P<build>[0-9\.]+).x86_64.rpm')
     salt = soup.find('a', href=ex)
+    if not salt:
+        return 'n/a'
     match = ex.match(salt.text)
     return match.groupdict()['version']
 
