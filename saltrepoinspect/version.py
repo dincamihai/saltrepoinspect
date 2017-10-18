@@ -29,8 +29,8 @@ def get_salt_version(version, flavor):
     resp = requests.get("{0}/x86_64".format(salt_repo_url))
     resp.raise_for_status()
     soup = BeautifulSoup(resp.content, 'html.parser')
-    ex = re.compile(r'^salt-(?P<version>[0-9a-z-\.]+)-(?P<build>[0-9\.]+).x86_64.rpm')
-    salt = soup.find('a', href=ex)
+    ex = re.compile(r'^salt-(?P<version>[0-9\.]+)-(?P<build>[0-9\.]+).x86_64.rpm$')
+    salt = soup.find('a', text=ex)
     if not salt:
         return 'n/a'
     match = ex.match(salt.text)
