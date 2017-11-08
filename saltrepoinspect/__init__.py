@@ -1,4 +1,4 @@
-from version import (
+from .version import (
     get_salt_version,
     parse_version,
     parse_flavor,
