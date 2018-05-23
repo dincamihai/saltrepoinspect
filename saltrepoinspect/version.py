@@ -19,9 +19,15 @@ def parse_flavor(flavor):
         # we treat it as products so that we don't break the templates commands
         flavor_major = 'products'
     else:
-        flavor_major, flavor_minor = flavor.split('-') if '-' in  flavor else (flavor, None)
+        splitted = flavor.split('-')
+        if len(splitted) == 1:
+            flavor_major, flavor_major_sec, flavor_minor = flavor, None, None
+        elif len(splitted) == 2:
+            flavor_major, flavor_major_sec, flavor_minor = splitted[0], None, splitted[1]
+        elif len(splitted) == 3:
+            flavor_major, flavor_major_sec, flavor_minor = splitted
 
-    return flavor_major, flavor_minor
+    return flavor_major, flavor_major_sec, flavor_minor
 
 
 def get_salt_version(version, flavor):
@@ -70,8 +76,10 @@ def get_salt_repo_name(version, flavor):
 
 
 def get_salt_repo_url_flavor(flavor):
-    flavor_major, flavor_minor = parse_flavor(flavor)
+    flavor_major, flavor_major_sec, flavor_minor = parse_flavor(flavor)
     salt_repo_url_parts = [flavor_major]
+    if flavor_major_sec:
+        salt_repo_url_parts.append(flavor_major_sec)
     if flavor_minor:
         salt_repo_url_parts.append(flavor_minor)
     salt_repo_url_flavor = ':/'.join(salt_repo_url_parts)
@@ -95,7 +103,7 @@ def get_salt_repo_url(version, flavor):
 
 def get_docker_params(version, flavor):
     vendor, version_major, separator, version_minor = parse_version(version)
-    flavor_major, flavor_minor = parse_flavor(flavor)
+    flavor_major, flavor_major_sec, flavor_minor = parse_flavor(flavor)
     repo_name = get_repo_name(version, flavor)
     salt_repo_name = get_salt_repo_name(version, flavor)
     salt_repo_url_flavor = get_salt_repo_url_flavor(flavor)
@@ -115,6 +123,7 @@ def get_docker_params(version, flavor):
         version=version,
         parent_image=parent_image,
         flavor_major=flavor_major,
+        flavor_major_sec=flavor_major_sec,
         flavor_minor=flavor_minor,
         repo_name=repo_name,
         novel_repo_name=novel_repo_name,
