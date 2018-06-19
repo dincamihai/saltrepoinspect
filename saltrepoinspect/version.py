@@ -11,6 +11,7 @@ def parse_version(version):
 
 def parse_flavor(flavor):
     flavor_major = None
+    flavor_major_sec = None
     flavor_minor = None
 
     if flavor == 'devel':
