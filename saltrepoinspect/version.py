@@ -18,15 +18,15 @@ def parse_flavor(flavor):
         # devel means install salt from git repository
         # and because there are no OBS repositories for it
         # we treat it as products so that we don't break the templates commands
-        flavor_major = 'products'
+        splitted = os.environ.get('BASE_FLAVOR', 'products').split('-')
     else:
         splitted = flavor.split('-')
-        if len(splitted) == 1:
-            flavor_major, flavor_major_sec, flavor_minor = flavor, None, None
-        elif len(splitted) == 2:
-            flavor_major, flavor_major_sec, flavor_minor = splitted[0], None, splitted[1]
-        elif len(splitted) == 3:
-            flavor_major, flavor_major_sec, flavor_minor = splitted
+    if len(splitted) == 1:
+        flavor_major, flavor_major_sec, flavor_minor = flavor, None, None
+    elif len(splitted) == 2:
+        flavor_major, flavor_major_sec, flavor_minor = splitted[0], None, splitted[1]
+    elif len(splitted) == 3:
+        flavor_major, flavor_major_sec, flavor_minor = splitted
 
     return flavor_major, flavor_major_sec, flavor_minor
 
