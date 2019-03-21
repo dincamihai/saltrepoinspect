@@ -5,7 +5,7 @@ from bs4 import BeautifulSoup
 
 
 def parse_version(version):
-    exp = '(?P<vendor>sles|rhel|ubuntu)(?P<major>\d{1,})(?:(?P<sp>sp)*(?P<minor>\d{1,}))*'
+    exp = '(?P<vendor>sles|rhel|ubuntu|tumbleweed)(?P<major>\d{,2})*(?:(?P<sp>sp)*(?P<minor>\d{,2}))'
     return re.match(exp, version).groups()
 
 
@@ -111,6 +111,10 @@ def get_docker_params(version, flavor):
     repo_parts = get_repo_parts(version)
     novel_repo_name = '-'.join(repo_parts).upper()
     parent_image = 'registry.mgr.suse.de/{0}'.format(version)
+    if vendor == 'ubuntu':
+        parent_image = '{0}:{1}.{2}'.format(vendor, version_major, version_minor)
+    elif vendor == 'tumbleweed':
+        parent_image = 'opensuse/tumbleweed'
     repo_label = ' '.join(repo_parts).upper()
     salt_repo_url = get_salt_repo_url(version, flavor)
     salt_version = get_salt_version(version, flavor)
