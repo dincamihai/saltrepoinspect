@@ -5,7 +5,7 @@ from bs4 import BeautifulSoup
 
 
 def parse_version(version):
-    exp = '(?P<vendor>sles|rhel|ubuntu|tumbleweed)(?P<major>\d{,2})*(?:(?P<sp>sp)*(?P<minor>\d{,2}))'
+    exp = '(?P<vendor>sles|rhel|ubuntu|opensuse|tumbleweed)(?:(?P<major>\d{1,2})(?:(?P<sp>sp)*(?P<minor>\d+))?)?'
     return re.match(exp, version).groups()
 
 
@@ -49,7 +49,10 @@ def get_repo_parts(version):
     vendor, version_major, separator, version_minor = parse_version(version)
     repo_parts = [version_major]
     if version_minor:
-        repo_parts.append('{0}{1}'.format(separator, version_minor))
+        if separator:
+            repo_parts.append('{0}{1}'.format(separator, version_minor))
+        else:
+            repo_parts.append(version_minor)
     return repo_parts
 
 
@@ -58,6 +61,8 @@ def get_repo_name(version, flavor):
     repo_parts = get_repo_parts(version)
     if vendor == 'SLES' and version_major == '11':
         repo_name = 'SLE_11_SP4'
+    if vendor == 'tumbleweed':
+        repo_name = 'Factory'
     else:
         repo_name = '_'.join(repo_parts)
     return repo_name
