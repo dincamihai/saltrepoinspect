@@ -5,7 +5,7 @@ from bs4 import BeautifulSoup
 
 
 def parse_version(version):
-    exp = '(?P<vendor>sles|rhel|ubuntu|opensuse|tumbleweed)(?:(?P<major>\d{1,2})(?:(?P<sp>sp)*(?P<minor>\d+))?)?'
+    exp = '(?P<vendor>sles|rhel|centos|ubuntu|opensuse|tumbleweed)(?:(?P<major>\d{1,2})(?:(?P<sp>sp)*(?P<minor>\d+))?)?'
     return re.match(exp, version).groups()
 
 
