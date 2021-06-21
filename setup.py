@@ -1,8 +1,7 @@
-# -*- coding: utf-8 -*-
 from setuptools import setup
 
 setup(name='saltrepoinspect',
-      version='0.1',
+      version='1.2',
       description='Tools to inspect a salt rpm repository',
       url='https://github.com/dincamihai/saltrepoinspect.git',
       author='Mihai Dincă',

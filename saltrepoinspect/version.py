@@ -1,10 +1,37 @@
 import re
 import os
 import requests
+from collections import namedtuple
 from bs4 import BeautifulSoup
 
+Distro = namedtuple("Distro", ["name", "major", "version_separator", "minor"])
+
+
+def parse_distro(distro_str) -> Distro:
+    """Use a regular expression to parse a distro_str into its components."""
+    name, major, separator, minor = re.match(
+        r"""
+        (?P<name>[a-z]+)
+        (?P<major>\d+)? # major version if it exists
+        (?P<separator>[a-zA-Z.]+)? # major-minor separator if it exists
+        (?P<minor>\d+)? # minor version if it exists
+        """,
+        distro_str,
+        re.VERBOSE,
+    ).groups()
+
+    # We use names like opensuse152 for openSUSE Leap 15.2
+    if name == "opensuse":
+        minor = major[-1]
+
+    # allow version comparisons for openSUSE Tumbleweed
+    if name == "tumbleweed":
+        major = "2000"
+
+    return Distro(name, major, separator, minor)
 
 def parse_version(version):
+    """Deprecated. Use parse_distro instead."""
     exp = '(?P<vendor>sles|rhel|centos|ubuntu|opensuse|tumbleweed)(?:(?P<major>\d{1,2})(?:(?P<sp>sp)*(?P<minor>\d+))?)?'
     return re.match(exp, version).groups()
 
@@ -107,38 +134,34 @@ def get_salt_repo_url(version, flavor):
     return salt_repo_url
 
 
-def get_docker_params(version, flavor):
-    vendor, version_major, separator, version_minor = parse_version(version)
+def get_docker_params(distro_str, flavor):
+    distro = parse_distro(distro_str)
     flavor_major, flavor_major_sec, flavor_minor = parse_flavor(flavor)
-    repo_name = get_repo_name(version, flavor)
-    salt_repo_name = get_salt_repo_name(version, flavor)
+    repo_name = get_repo_name(distro_str, flavor)
+    salt_repo_name = get_salt_repo_name(distro_str, flavor)
     salt_repo_url_flavor = get_salt_repo_url_flavor(flavor)
-    repo_parts = get_repo_parts(version)
-    novel_repo_name = '-'.join(repo_parts).upper()
-    parent_image = 'registry.mgr.suse.de/{0}'.format(version)
-    if vendor == 'ubuntu':
-        parent_image = '{0}:{1}.{2}'.format(vendor, version_major, version_minor)
-    elif vendor == 'tumbleweed':
+    parent_image = 'registry.mgr.suse.de/{0}'.format(distro_str)
+    if distro.name == 'ubuntu':
+        parent_image = '{0}:{1}.{2}'.format(distro.name, distro.major, distro.minor)
+    elif distro.name == 'tumbleweed':
         parent_image = 'opensuse/tumbleweed'
-    repo_label = ' '.join(repo_parts).upper()
-    salt_repo_url = get_salt_repo_url(version, flavor)
-    salt_version = get_salt_version(version, flavor)
+    salt_repo_url = get_salt_repo_url(distro_str, flavor)
+    salt_version = get_salt_version(distro_str, flavor)
 
     return dict(
-        vendor = vendor,
-        major=version_major,
-        minor=version_minor,
-        version_separator=separator,
+        vendor=distro.name,
+        major=distro.major,
+        minor=distro.minor,
+        version_separator=distro.version_separator,
         flavor=flavor,
-        version=version,
+        version=distro_str,
         parent_image=parent_image,
         flavor_major=flavor_major,
         flavor_major_sec=flavor_major_sec,
         flavor_minor=flavor_minor,
         repo_name=repo_name,
-        novel_repo_name=novel_repo_name,
-        repo_label=repo_label,
         salt_repo_url_flavor=salt_repo_url_flavor,
         salt_repo_name=salt_repo_name,
         salt_repo_url=salt_repo_url,
-        salt_version=salt_version)
+        salt_version=salt_version,
+    )
